@@ -1,7 +1,7 @@
 `use strict`
 
 const PORT = 3000;
-
+process.env.PORT || PORT
 const express = require('express');
 const cors = require('cors'); 
 
