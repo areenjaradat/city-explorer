@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node srever.js"
+    "dev": "node srever.js"
   },
   "repository": {
     "type": "git",
