@@ -4,14 +4,14 @@ const PORT = 3000;
 
 const express = require('express');
 const cors = require('cors'); 
-const { request } = require('express');
+
 
 const app = express(); 
 
 app.use(cors());
 
 app.get('/location',handleLocation);
-app.get('/weather',handleWeather);
+// app.get('/weather',handleWeather);
 
 
 function handleLocation(request, response){
@@ -33,11 +33,11 @@ function Location (city,data){
 }
 
 
-function handleWeather(request,response){
-    const getWeather=require('data/weather.json');
-    const cityWeather=request.query.
-    console.log("cityWeather  :", cityWeather);
+// function handleWeather(request,response){
+//     const getWeather=require('data/weather.json');
+//     const cityWeather=request.query.
+//     console.log("cityWeather  :", cityWeather);
 
-    let currentWeather=
+//     let currentWeather=
 
-}
+// }
