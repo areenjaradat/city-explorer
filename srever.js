@@ -46,7 +46,13 @@ function handleWeather(request,response){
 response.send(currentWeather);
 }
 function Weather(weath){
-    this.description=weath.weather.description;
+    this.forecast=weath.weather.description;
+   
     this.datetime=weath.datetime;
 }
 app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`))
+
+// error handler
+app.use(function (err, req, res, next) {
+    res.status(500).send(err.message)
+  })
