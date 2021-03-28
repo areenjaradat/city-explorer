@@ -50,6 +50,7 @@ function Weather(weath){
    
     this.datetime=weath.datetime;
 }
+//listener
 app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`))
 
 // error handler
