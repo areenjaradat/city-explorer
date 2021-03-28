@@ -11,11 +11,11 @@ const app = express();
 app.use(cors());
 
 app.get('/location',handleLocation);
-// app.get('/weather',handleWeather);
+app.get('/weather',handleWeather);
 
 
 function handleLocation(request, response){
-    const getLocation =require('data/location.json');
+    const getLocation =require('./data/location.json');
     const cityLocation=request.query.city
     console.log("city  :", cityLocation)
 
@@ -33,11 +33,20 @@ function Location (city,data){
 }
 
 
-// function handleWeather(request,response){
-//     const getWeather=require('data/weather.json');
-//     const cityWeather=request.query.
-//     console.log("cityWeather  :", cityWeather);
+function handleWeather(request,response){
+    const getWeather=require('./data/weather.json');
+    // const cityWeather=request.query.
+    // console.log("cityWeather  :", cityWeather);
 
-//     let currentWeather=
+    let currentWeather=[];
 
-// }
+    getWeather.data.forEach(element => {
+        currentWeather.push(new Weather(element))
+    });
+response.send(currentWeather);
+}
+function Weather(weath){
+    this.description=weath.weather.description;
+    this.datetime=weath.datetime;
+}
+app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`))
