@@ -15,6 +15,21 @@ app.get('/location',handleLocation);
 app.get('/weather',handleWeather);
 app.get('/Parks',handleParks);
 
+
+app.use('*', notFoundHandler); // 404 not found url
+ 
+app.use(errorHandler);
+
+function notFoundHandler(request, response) {
+  response.status(404).send('requested API is Not Found!');
+}
+
+function errorHandler(err, request, response, next) {
+  response.status(500).send('something is wrong in server');
+}
+
+
+
 // let loc=[];
 // let lonn=0;
 // let latt=0;
@@ -92,7 +107,7 @@ function handleWeather(request,response){
 function Weather(weath){
   this.forecast=weath.weather.description;
 
-  this.datetime=weath.datetime;
+  this.datetime=weath.valid_date;
 }
 
 
@@ -108,6 +123,9 @@ function handleParks(request,response){
     currentParks= parks.map(element=> new Parks(element));
     console.log(currentParks);
     response.send(currentParks);
+  }).catch((err)=> {
+    console.log('ERROR IN LOCATION API');
+    console.log(err);
   });
 
 }
