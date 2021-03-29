@@ -4,7 +4,7 @@
   "description": "**Author**: Areen Jaradat **Version**: 1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node srever.js"
+    "start": "node srever.js"
   },
   "repository": {
     "type": "git",
