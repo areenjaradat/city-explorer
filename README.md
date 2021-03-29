@@ -56,3 +56,59 @@ Actual time needed to complete: I hour and half
 ## Credits and Collaborations
 
 This website help me in last feature https://expressjs.com/en/guide/writing-middleware.html 
+
+# city-explorer
+
+**Author**: Areen Jaradat
+**Version**: 1.0.1
+
+## Overview
+
+We build this application for the user see the city name, some information of available parks and weather information
+
+## Getting Started
+
+Open the link and enter the link the type the location you want then will have information about city , weather and of available parks.
+
+## Architecture
+
+1. Using JavaScript
+2. using node.js
+3. using express framework to work with the server easily
+4. using cors  It allows you to make requests from one website to another website in the browser
+5. using superagent
+
+## Change Log
+
+Number and name of feature: feature 1  Data formatting
+Estimate of time needed to complete:30 min
+
+Start time: 3.54pm
+
+Finish time: 4:10pm
+
+Actual time needed to complete: 20 min
+
+Number and name of feature: feature 2 Locations
+Estimate of time needed to complete: 30 min
+
+Start time: 4.13pm
+
+Finish time: 4:40pm
+
+Actual time needed to complete: 30 min
+
+Number and name of feature: feature 3 Weather
+
+Start time: 4.40pm
+
+Finish time: 5:40pm
+
+Actual time needed to complete: 1 hour
+
+Number and name of feature: feature 4 Parks
+Start time: 5:40pm
+
+Finish time: 7:00pm
+
+Actual time needed to complete: 2 hours
