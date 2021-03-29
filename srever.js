@@ -1,12 +1,13 @@
-`use strict`
+`use strict`;
 
-const PORT = 3000;
-process.env.PORT || PORT
+require('dotenv').config();
+// const PORT = 3000;
+const PORT = process.env.PORT;
 const express = require('express');
-const cors = require('cors'); 
+const cors = require('cors');
 
 
-const app = express(); 
+const app = express();
 
 app.use(cors());
 
@@ -15,45 +16,44 @@ app.get('/weather',handleWeather);
 
 
 function handleLocation(request, response){
-    const getLocation =require('./data/location.json');
-    const cityLocation=request.query.city
-    console.log("city  :", cityLocation)
+  const getLocation =require('./data/location.json');
+  const cityLocation=request.query.city;
+  console.log('city:', cityLocation);
 
-    let location =new Location(cityLocation,getLocation)
-  
-    response.send(location);
+  let location =new Location(cityLocation,getLocation);
+  response.send(location);
 }
 
 function Location (city,data){
-    this.search_query = city;
-    this.formatted_query = data[0].display_name;
-    this.latitude = data[0].lat;
-    this.longitude = data[0].lon;
+  this.search_query = city;
+  this.formatted_query = data[0].display_name;
+  this.latitude = data[0].lat;
+  this.longitude = data[0].lon;
 
 }
 
 
 function handleWeather(request,response){
-    const getWeather=require('./data/weather.json');
-    // const cityWeather=request.query.
-    // console.log("cityWeather  :", cityWeather);
+  const getWeather=require('./data/weather.json');
+  // const cityWeather=request.query.
+  // console.log("cityWeather  :", cityWeather);
 
-    let currentWeather=[];
+  let currentWeather=[];
 
-    getWeather.data.forEach(element => {
-        currentWeather.push(new Weather(element))
-    });
-response.send(currentWeather);
+  getWeather.data.forEach(element => {
+    currentWeather.push(new Weather(element));
+  });
+  response.send(currentWeather);
 }
 function Weather(weath){
-    this.forecast=weath.weather.description;
-   
-    this.datetime=weath.datetime;
+  this.forecast=weath.weather.description;
+
+  this.datetime=weath.datetime;
 }
 //listener
-app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`))
+app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`));
 
 // error handler
-app.use(function (err, req, res, next) {
-    res.status(500).send(err.message)
-  })
+// app.use(function (err, req, res) {
+//   res.status(500).send(err.message);
+// });
