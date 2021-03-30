@@ -9,6 +9,10 @@ const superagent = require('superagent');
 
 const app = express();
 
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => console.log('PG PROBLEM!!!') );
+
 app.use(cors());
 
 app.get('/location',handleLocation);
@@ -17,7 +21,7 @@ app.get('/Parks',handleParks);
 
 
 app.use('*', notFoundHandler); // 404 not found url
- 
+
 app.use(errorHandler);
 
 function notFoundHandler(request, response) {
@@ -34,39 +38,59 @@ function errorHandler(err, request, response, next) {
 // let lonn=0;
 // let latt=0;
 
-const mylocation={};
+// const mylocation={};
 
 function handleLocation(request, response){
 //   const getLocation =require('./data/location.json');
 
   const cityLocation=request.query.city;
 
+  // let data=checkData(cityLocation);
+  // console.log(checkData(cityLocation));
+  // response.send(data);
+
+  let searching=`SELECT * FROM locations WHERE search_query=$1`;
+  let location=[cityLocation];
 
   let key = process.env.GEOCODE_API_KEY;
   const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${cityLocation}&format=json&limit=1`;
-  superagent.get(url).then(res=> {
-    // use response.body to get the response data itself
+  return client.query(searching,location).then(result=>{
+    if(result.rowCount){
+      console.log(result.rows[0]);
+      response.send(result.rows[0]);
+    }else {
+      superagent.get(url).then(res=>{
+        const locationData = res.body[0];
+        const location = new Location(cityLocation, locationData);
+        let SQL=`INSERT INTO locations(search_query, formatted_query, latitude, longitude)VALUES($1,$2,$3,$4)`;
+        let Values = [location.search_query, location.formatted_query, location.latitude, location.longitude];
+        client.query(SQL, Values).then(result => {
+          console.log(result);
 
-    const locationData = res.body[0];
-    // lonn=locationData.longitude;
-    // latt=locationData.latitude;
-    const location = new Location(cityLocation, locationData);
-    mylocation.lat=locationData.latitude;
-    mylocation.lon=locationData.longitude;
-    response.send(location);
-
-  }).catch((err)=> {
-    console.log('ERROR IN LOCATION API');
-    console.log(err);
+        });
+        response.send(location);
+      });
+    }
   });
 
+  // superagent.get(url).then(res=> {
 
-  //   console.log('city:', cityLocation);
+  //   const locationData = res.body[0];
 
-//   let location =new Location(cityLocation,getLocation);
-//   response.send(location);
+  //   const location = new Location(cityLocation, locationData);
+  //   mylocation.lat=locationData.latitude;
+  //   mylocation.lon=locationData.longitude;
+  //   response.send(location);
+
+  // }).catch((err)=> {
+  //   console.log('ERROR IN LOCATION API');
+  //   console.log(err);
+  // });
+
 }
+// function checkData(city){
 
+// }
 function Location (city,data){
   this.search_query = city;
   this.formatted_query = data.display_name;
@@ -119,9 +143,9 @@ function handleParks(request,response){
 
     let currentParks=[];
     let parks=data.body.data.slice(0,11);
-    console.log(parks);
+    // console.log(parks);
     currentParks= parks.map(element=> new Parks(element));
-    console.log(currentParks);
+    // console.log(currentParks);
     response.send(currentParks);
   }).catch((err)=> {
     console.log('ERROR IN LOCATION API');
@@ -139,14 +163,10 @@ function Parks(data){
 
 
 
+client.connect().then(()=> {
+  console.log('connected');
+  //listener
+  app.listen(PORT, ()=> console.log(`App is running on ${PORT}`));
+});
 
 
-
-
-//listener
-app.listen(PORT, ()=> console.log(`App is running on Server on port: ${PORT}`));
-
-// error handler
-// app.use(function (err, req, res) {
-//   res.status(500).send(err.message);
-// });
