@@ -15,10 +15,14 @@ client.on('error', err => console.log('PG PROBLEM!!!') );
 
 app.use(cors());
 
+
+//end points
 app.get('/location',handleLocation);
 app.get('/weather',handleWeather);
 app.get('/Parks',handleParks);
-
+app.get('/movies',handlemovies);
+app.get('/movies',handlemovies);
+app.get('/yelp',handleyelp);
 
 app.use('*', notFoundHandler); // 404 not found url
 
@@ -56,7 +60,7 @@ function handleLocation(request, response){
   const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${cityLocation}&format=json&limit=1`;
   return client.query(searching,location).then(result=>{
     if(result.rowCount){
-      console.log(result.rows[0]);
+      // console.log(result.rows[0]);
       response.send(result.rows[0]);
     }else {
       superagent.get(url).then(res=>{
@@ -65,7 +69,7 @@ function handleLocation(request, response){
         let SQL=`INSERT INTO locations(search_query, formatted_query, latitude, longitude)VALUES($1,$2,$3,$4)`;
         let Values = [location.search_query, location.formatted_query, location.latitude, location.longitude];
         client.query(SQL, Values).then(result => {
-          console.log(result);
+          // console.log(result);
 
         });
         response.send(location);
@@ -148,7 +152,7 @@ function handleParks(request,response){
     // console.log(currentParks);
     response.send(currentParks);
   }).catch((err)=> {
-    console.log('ERROR IN LOCATION API');
+    console.log('ERROR IN Parks API');
     console.log(err);
   });
 
@@ -161,8 +165,56 @@ function Parks(data){
   this.url=data.url;
 }
 
+function handlemovies(request,response){
+  let arrayOFMovies=[];
+  let key = process.env.MOVIE_API_KEY;
+  // const url=`https://api.themoviedb.org/3/movie/550?api_key=da735d1206c20c177c63a737bdb7678e`;
+  // const url =`https://api.themoviedb.org/3/movie/top_rated?api_key=${key}&query=${request.query.city}`;
+  const url =`https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${request.query.search_query}&language=en-US`;
+  superagent.get(url).then(data=> {
+    let movies=data.body.results;
+    movies.forEach(element=>{
+      arrayOFMovies.push(new Movies(element));
+    });
+    response.send(arrayOFMovies);
+  }).catch((err)=> {
+    console.log('ERROR IN movies API');
+    console.log(err);
+  });
+}
 
 
+function Movies(data){
+  this.title=data.title;
+  this.overview=data.overview;
+  this.average_votes=data.vote_average;
+  this.total_votes=data.vote_count;
+  this.image_url=`https://image.tmdb.org/t/p/w500${data.poster_path}`;
+  this.popularity=data.popularity;
+  this.released_on=data.release_date;
+}
+
+function handleyelp(request,response){
+  let page=request.query.page;
+  console.log(page);
+  console.log('handleyelp',request.query);
+  let arrayOFYelp=[];
+  let key = process.env.YELP_API_KEY;
+  const url =`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${request.query.latitude}&longitude=${request.query.longitude}&limit=5`;
+
+  superagent.get(url).set('Authorization',`Bearer ${key}`).then(data=>{
+    arrayOFYelp=data.body.businesses.map(element=>{return new Yelp(element);});
+    // console.log(arrayOFYelp);
+    response.send(arrayOFYelp);
+  });
+}
+function Yelp(data){
+  this.name=data.name;
+  this.image_url=data.image_url;
+  this.price=data.price;
+  this.rating=data.rating;
+  this.url=data.url;
+}
 client.connect().then(()=> {
   console.log('connected');
   //listener
