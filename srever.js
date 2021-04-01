@@ -70,7 +70,7 @@ function handleLocation(request, response){
         let Values = [location.search_query, location.formatted_query, location.latitude, location.longitude];
         client.query(SQL, Values).then(result => {
           // console.log(result);
-
+          // response.send(result.rows);
         });
         response.send(location);
       });
@@ -200,12 +200,12 @@ function handleyelp(request,response){
   console.log('handleyelp',request.query);
   let arrayOFYelp=[];
   let key = process.env.YELP_API_KEY;
-  const url =`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${request.query.latitude}&longitude=${request.query.longitude}&limit=5`;
+  const url =`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${request.query.latitude}&longitude=${request.query.longitude}&limit=20`;
 
   superagent.get(url).set('Authorization',`Bearer ${key}`).then(data=>{
     arrayOFYelp=data.body.businesses.map(element=>{return new Yelp(element);});
     // console.log(arrayOFYelp);
-    response.send(arrayOFYelp);
+    response.send(arrayOFYelp.slice((page-1)*5,page*5));
   });
 }
 function Yelp(data){
